@@ -1,0 +1,32 @@
+git clone https://gitlab.com/frego100/educational-institution-project.git
+cd educational-institution-project/
+git branch
+git checkout devolped
+cd MyProject/
+composer install
+cp .env.example .env     //Si es para linux
+copy .env.example .env //Si es para windows 
+php artisan key:generate && php artisan migrate:refresh && php artisan db:seed
+php artisan serve
+
+
+
+
+
+PARA CREAR TABLAS 
+php artisan make:model Alumno -mcr
+entrar a databases/migrations/<archivo>.php //Utilizar nombres en singular siempre
+
+CODIGO
+
+Schema::create('alumnos', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('nombre');
+            $table->text('descripcion');
+            $table->timestamps();
+        });
+
+
+
+php artisan migrate
+

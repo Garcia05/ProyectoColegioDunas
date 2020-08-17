@@ -1,0 +1,136 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Nota;
+use App\Alumno;
+use App\Docente;
+use App\Curso;
+use Illuminate\Http\Request;
+
+class NotaController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('home');
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $req)
+    {
+        $docente = Docente::where('dni_do',$req->dni_docente)->get();
+        $alumno = Alumno::where('dni_al',$req->dni_alumno)->get();
+        $curso = Curso::where('id_curso',$req->id_curso)->get();
+        
+        $_errores = [];
+        if(count($docente) == 0  || count($alumno) == 0 || count($curso) == 0 ){
+            if(count($docente) == 0){
+                $_errores[0]='DOCENTE NO ENCONTRADO';
+            }
+            if(count($alumno) == 0){
+                $_errores[1]='ALUMNO NO ENCONTRADO';
+            }
+            if(count($curso) == 0){
+                $_errores[2]='CURSO NO ENCONTRADO';
+            }
+            return back()->withErrors($_errores)->withInput();
+        }
+        $user = new Nota;
+        $user->dni_reg_alu =$req->dni_alumno;
+        $user->dni_reg_doc =$req->dni_docente;
+        $user->id_reg_curso =$req->id_curso;
+        $user->fecha_registro =$req->date;
+        $user->nota =$req->nota;
+        $user->save();
+        return back()->with('mensaje','Se agrego la nota de forma correcta');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Nota  $nota
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Nota $nota)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Nota  $nota
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Nota $nota)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Nota  $nota
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Nota $nota)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Nota  $nota
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Nota $nota)
+    {
+        //
+    }
+    public function find_Alumno_Nota($id)
+    {
+        //
+        $notas = Nota::where('dni_reg_alu',$id)->get();
+        return view('notasalumno',compact('notas'));
+        //Esta función nos devolvera todas las tareas que tenemos en nuestra BD
+    }
+    public function updateDatosAlumno(Request $request)
+    {
+        //
+
+        $id = trim($request->get('dni_al'));
+        $grado = trim($request->get('grado_alumno'));
+        $seccion = trim($request->get('seccion'));
+        $user = Alumno::where('dni_al',$id)->first();
+        // $user->boolean('completed')->default(false);
+        $user->grado_alumno = $request->grado_alumno;
+        $user->seccion_alumno = $request->seccion;
+
+        $user->save();
+
+        return back()->with('mensaje','Se Actualizo datos de forma correcta');
+        //Esta función nos devolvera todas las tareas que tenemos en nuestra BD
+    }
+}
